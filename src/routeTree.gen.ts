@@ -10,33 +10,63 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DangKyRouteImport } from './routes/dang-ky'
+import { Route as DangNhapRouteImport } from './routes/dang-nhap'
+import { Route as QuenMatKhauRouteImport } from './routes/quen-mat-khau'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DangKyRoute = DangKyRouteImport.update({
+  id: '/dang-ky',
+  path: '/dang-ky',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DangNhapRoute = DangNhapRouteImport.update({
+  id: '/dang-nhap',
+  path: '/dang-nhap',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QuenMatKhauRoute = QuenMatKhauRouteImport.update({
+  id: '/quen-mat-khau',
+  path: '/quen-mat-khau',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dang-ky': typeof DangKyRoute
+  '/dang-nhap': typeof DangNhapRoute
+  '/quen-mat-khau': typeof QuenMatKhauRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dang-ky': typeof DangKyRoute
+  '/dang-nhap': typeof DangNhapRoute
+  '/quen-mat-khau': typeof QuenMatKhauRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/dang-ky': typeof DangKyRoute
+  '/dang-nhap': typeof DangNhapRoute
+  '/quen-mat-khau': typeof QuenMatKhauRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/dang-ky' | '/dang-nhap' | '/quen-mat-khau'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/dang-ky' | '/dang-nhap' | '/quen-mat-khau'
+  id: '__root__' | '/' | '/dang-ky' | '/dang-nhap' | '/quen-mat-khau'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DangKyRoute: typeof DangKyRoute
+  DangNhapRoute: typeof DangNhapRoute
+  QuenMatKhauRoute: typeof QuenMatKhauRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +78,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dang-ky': {
+      id: '/dang-ky'
+      path: '/dang-ky'
+      fullPath: '/dang-ky'
+      preLoaderRoute: typeof DangKyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dang-nhap': {
+      id: '/dang-nhap'
+      path: '/dang-nhap'
+      fullPath: '/dang-nhap'
+      preLoaderRoute: typeof DangNhapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/quen-mat-khau': {
+      id: '/quen-mat-khau'
+      path: '/quen-mat-khau'
+      fullPath: '/quen-mat-khau'
+      preLoaderRoute: typeof QuenMatKhauRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DangKyRoute: DangKyRoute,
+  DangNhapRoute: DangNhapRoute,
+  QuenMatKhauRoute: QuenMatKhauRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

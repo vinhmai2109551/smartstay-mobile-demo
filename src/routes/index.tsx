@@ -44,7 +44,7 @@ const slides = [
 
 function Onboarding() {
   const [step, setStep] = useState(0);
-  const slide = slides[step];
+  const slide = slides[step]!;
   const Icon = slide.icon;
   const last = step === slides.length - 1;
 
