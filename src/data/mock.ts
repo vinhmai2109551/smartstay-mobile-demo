@@ -258,7 +258,7 @@ export const formatVnd = (value: number) =>
     .format(value)
     .replace(/\s/g, " ");
 
-export const getRoom = (id: string) => rooms.find((r) => r.id === id) ?? rooms[0];
-export const getBooking = (id: string) => bookings.find((b) => b.id === id) ?? bookings[0];
+export const getRoom = (id: string): Room => rooms.find((r) => r.id === id) ?? rooms[0]!;
+export const getBooking = (id: string): Booking => bookings.find((b) => b.id === id) ?? bookings[0]!;
 export const amenityLabel = (id: string) =>
   amenities.find((a) => a.id === id)?.label ?? id;

@@ -13,6 +13,9 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DangKyRouteImport } from './routes/dang-ky'
 import { Route as DangNhapRouteImport } from './routes/dang-nhap'
 import { Route as QuenMatKhauRouteImport } from './routes/quen-mat-khau'
+import { Route as TimPhongRouteImport } from './routes/tim-phong'
+import { Route as TrangChuRouteImport } from './routes/trang-chu'
+import { Route as PhongIdRouteImport } from './routes/phong.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,18 +37,39 @@ const QuenMatKhauRoute = QuenMatKhauRouteImport.update({
   path: '/quen-mat-khau',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TimPhongRoute = TimPhongRouteImport.update({
+  id: '/tim-phong',
+  path: '/tim-phong',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrangChuRoute = TrangChuRouteImport.update({
+  id: '/trang-chu',
+  path: '/trang-chu',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PhongIdRoute = PhongIdRouteImport.update({
+  id: '/phong/$id',
+  path: '/phong/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dang-ky': typeof DangKyRoute
   '/dang-nhap': typeof DangNhapRoute
   '/quen-mat-khau': typeof QuenMatKhauRoute
+  '/tim-phong': typeof TimPhongRoute
+  '/trang-chu': typeof TrangChuRoute
+  '/phong/$id': typeof PhongIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dang-ky': typeof DangKyRoute
   '/dang-nhap': typeof DangNhapRoute
   '/quen-mat-khau': typeof QuenMatKhauRoute
+  '/tim-phong': typeof TimPhongRoute
+  '/trang-chu': typeof TrangChuRoute
+  '/phong/$id': typeof PhongIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +77,38 @@ export interface FileRoutesById {
   '/dang-ky': typeof DangKyRoute
   '/dang-nhap': typeof DangNhapRoute
   '/quen-mat-khau': typeof QuenMatKhauRoute
+  '/tim-phong': typeof TimPhongRoute
+  '/trang-chu': typeof TrangChuRoute
+  '/phong/$id': typeof PhongIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dang-ky' | '/dang-nhap' | '/quen-mat-khau'
+  fullPaths:
+    | '/'
+    | '/dang-ky'
+    | '/dang-nhap'
+    | '/quen-mat-khau'
+    | '/tim-phong'
+    | '/trang-chu'
+    | '/phong/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dang-ky' | '/dang-nhap' | '/quen-mat-khau'
-  id: '__root__' | '/' | '/dang-ky' | '/dang-nhap' | '/quen-mat-khau'
+  to:
+    | '/'
+    | '/dang-ky'
+    | '/dang-nhap'
+    | '/quen-mat-khau'
+    | '/tim-phong'
+    | '/trang-chu'
+    | '/phong/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/dang-ky'
+    | '/dang-nhap'
+    | '/quen-mat-khau'
+    | '/tim-phong'
+    | '/trang-chu'
+    | '/phong/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,6 +116,9 @@ export interface RootRouteChildren {
   DangKyRoute: typeof DangKyRoute
   DangNhapRoute: typeof DangNhapRoute
   QuenMatKhauRoute: typeof QuenMatKhauRoute
+  TimPhongRoute: typeof TimPhongRoute
+  TrangChuRoute: typeof TrangChuRoute
+  PhongIdRoute: typeof PhongIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +151,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof QuenMatKhauRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tim-phong': {
+      id: '/tim-phong'
+      path: '/tim-phong'
+      fullPath: '/tim-phong'
+      preLoaderRoute: typeof TimPhongRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trang-chu': {
+      id: '/trang-chu'
+      path: '/trang-chu'
+      fullPath: '/trang-chu'
+      preLoaderRoute: typeof TrangChuRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/phong/$id': {
+      id: '/phong/$id'
+      path: '/phong/$id'
+      fullPath: '/phong/$id'
+      preLoaderRoute: typeof PhongIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -107,6 +180,9 @@ const rootRouteChildren: RootRouteChildren = {
   DangKyRoute: DangKyRoute,
   DangNhapRoute: DangNhapRoute,
   QuenMatKhauRoute: QuenMatKhauRoute,
+  TimPhongRoute: TimPhongRoute,
+  TrangChuRoute: TrangChuRoute,
+  PhongIdRoute: PhongIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
