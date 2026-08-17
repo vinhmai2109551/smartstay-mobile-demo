@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { formatVnd, getRoom, rooms, type Room } from "@/data/mock";
 import { cn } from "@/lib/utils";
 
-type Search = { room?: string };
+type Search = { room?: string | undefined };
 
 export const Route = createFileRoute("/chat")({
   validateSearch: (search: Record<string, unknown>): Search => ({

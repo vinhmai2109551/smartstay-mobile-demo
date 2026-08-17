@@ -8,7 +8,7 @@ type Search = { status: "success" | "failed" };
 
 export const Route = createFileRoute("/thanh-toan/$id/ket-qua")({
   validateSearch: (search: Record<string, unknown>): Search => ({
-    status: search.status === "failed" ? "failed" : "success",
+    status: search["status"] === "failed" ? "failed" : "success",
   }),
   head: () => ({
     meta: [
