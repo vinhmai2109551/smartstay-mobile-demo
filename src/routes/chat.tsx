@@ -1,11 +1,14 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { ChevronLeft, Send, Sparkles } from "lucide-react";
+import { ChevronLeft, RotateCcw, Send, Sparkles } from "lucide-react";
 import { PhoneFrame } from "@/components/layout/PhoneFrame";
 import { RoomCard } from "@/components/smartstay/RoomCard";
+import { ChatBookingWidget } from "@/components/smartstay/ChatBookingWidget";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { formatVnd, getRoom, rooms, type Room } from "@/data/mock";
+import { formatVnd, getRoom } from "@/data/mock";
+import { replyFor } from "@/lib/chat-engine";
+import { useAppStore, type ChatMessage } from "@/store/app-store";
 import { cn } from "@/lib/utils";
 
 type Search = { room?: string | undefined };
@@ -31,51 +34,79 @@ export const Route = createFileRoute("/chat")({
   component: ChatScreen,
 });
 
-type Message = {
-  id: number;
-  from: "ai" | "user";
-  text: string;
-  rooms?: Room[];
-  cta?: { label: string; roomId: string };
-};
-
 const quickReplies = [
   "Phòng đôi view biển cuối tuần này",
   "Chính sách huỷ thế nào?",
   "Có phòng cho 4 người không?",
   "Ưu đãi đang có",
+  "Đặt phòng giúp mình",
 ];
+
+const newId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 
 function ChatScreen() {
   const router = useRouter();
   const { room: roomParam } = Route.useSearch();
   const focusRoom = roomParam ? getRoom(roomParam) : null;
+  const { chat, setChat, resetChat } = useAppStore();
 
-  const [messages, setMessages] = useState<Message[]>(() => [
-    {
-      id: 1,
-      from: "ai",
-      text: focusRoom
-        ? `Chào bạn! Bạn đang quan tâm phòng ${focusRoom.name} (${formatVnd(focusRoom.price)}/đêm). Mình có thể giúp gì — kiểm tra ngày trống, chính sách huỷ hay đặt luôn?`
-        : "Chào bạn 👋 Mình là trợ lý SmartStay. Bạn muốn ở ngày nào và đi mấy người? Mình sẽ tìm phòng phù hợp ngay.",
-    },
-  ]);
   const [input, setInput] = useState("");
+  const [typing, setTyping] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
+
+  // Tin nhắn chào mừng (chỉ tạo khi lịch sử đang trống).
+  useEffect(() => {
+    if (chat.length > 0) return;
+    setChat([
+      {
+        id: newId(),
+        from: "ai",
+        text: focusRoom
+          ? `Chào bạn! Bạn đang quan tâm ${focusRoom.name} (${formatVnd(focusRoom.price)}/đêm). Mình có thể kiểm tra ngày trống, giải thích chính sách hoặc đặt phòng ngay tại đây.`
+          : "Chào bạn 👋 Mình là trợ lý SmartStay. Bạn muốn ở ngày nào và đi mấy người? Mình sẽ tìm phòng phù hợp và đặt luôn trong khung chat.",
+        ...(focusRoom ? { roomIds: [focusRoom.id] } : {}),
+      },
+    ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chat.length, roomParam]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [chat, typing]);
 
   const send = (text: string) => {
-    if (!text.trim()) return;
-    const userMsg: Message = { id: Date.now(), from: "user", text };
-    setMessages((m) => [...m, userMsg]);
+    const value = text.trim().slice(0, 500);
+    if (!value || typing) return;
+    setChat((prev) => [...prev, { id: newId(), from: "user", text: value }]);
     setInput("");
+    setTyping(true);
 
+    const reply = replyFor(value, focusRoom);
     setTimeout(() => {
-      setMessages((m) => [...m, replyFor(text)]);
-    }, 600);
+      setTyping(false);
+      setChat((prev) => [
+        ...prev,
+        {
+          id: newId(),
+          from: "ai",
+          text: reply.text,
+          ...(reply.roomIds ? { roomIds: reply.roomIds } : {}),
+          ...(reply.bookingRoomId ? { bookingRoomId: reply.bookingRoomId } : {}),
+        },
+      ]);
+    }, 900 + Math.min(1200, value.length * 18));
+  };
+
+  const onBookingDone = (code: string, bookingId: string) => {
+    setChat((prev) => [
+      ...prev,
+      {
+        id: newId(),
+        from: "ai",
+        text: `Đặt phòng thành công! Mã đặt phòng của bạn là ${code}. Bạn có thể thanh toán ngay hoặc xem chi tiết đơn bất cứ lúc nào.`,
+        bookingId,
+      },
+    ]);
   };
 
   return (
@@ -98,39 +129,37 @@ function ChatScreen() {
             <span className="size-1.5 rounded-full bg-success" /> Đang trực tuyến
           </p>
         </div>
+        <button
+          type="button"
+          onClick={resetChat}
+          aria-label="Bắt đầu hội thoại mới"
+          className="flex size-9 items-center justify-center rounded-full border border-border text-muted-foreground"
+        >
+          <RotateCcw className="size-4" />
+        </button>
       </header>
 
       <div className="flex-1 space-y-3 px-4 py-4">
-        {messages.map((m) => (
-          <div key={m.id} className="space-y-2">
-            <div
-              className={cn(
-                "max-w-[85%] rounded-2xl px-4 py-2.5 text-sm/6",
-                m.from === "ai"
-                  ? "rounded-tl-sm bg-card shadow-soft"
-                  : "ml-auto rounded-tr-sm bg-primary text-primary-foreground",
-              )}
-            >
-              {m.text}
-            </div>
-
-            {m.rooms && (
-              <div className="no-scrollbar -mx-4 flex gap-3 overflow-x-auto px-4 pb-1">
-                {m.rooms.map((r) => (
-                  <RoomCard key={r.id} room={r} variant="compact" />
-                ))}
-              </div>
-            )}
-
-            {m.cta && (
-              <Button asChild size="sm" className="gap-2">
-                <Link to="/dat-phong/$id" params={{ id: m.cta.roomId }}>
-                  {m.cta.label}
-                </Link>
-              </Button>
-            )}
-          </div>
+        {chat.map((m) => (
+          <MessageRow key={m.id} message={m} onBookingDone={onBookingDone} />
         ))}
+
+        {typing && (
+          <div className="w-fit rounded-2xl rounded-tl-sm bg-card px-4 py-3 shadow-soft">
+            <span className="flex items-center gap-1">
+              {[0, 150, 300].map((d) => (
+                <span
+                  key={d}
+                  className="size-1.5 animate-bounce rounded-full bg-muted-foreground/60"
+                  style={{ animationDelay: `${d}ms` }}
+                />
+              ))}
+              <span className="ml-2 text-xs text-muted-foreground">
+                Trợ lý đang trả lời...
+              </span>
+            </span>
+          </div>
+        )}
         <div ref={endRef} />
       </div>
 
@@ -156,6 +185,7 @@ function ChatScreen() {
         >
           <Input
             value={input}
+            maxLength={500}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Nhắn cho trợ lý SmartStay..."
             className="rounded-full"
@@ -164,6 +194,7 @@ function ChatScreen() {
             type="submit"
             size="icon"
             aria-label="Gửi"
+            disabled={typing || input.trim().length === 0}
             className="size-10 shrink-0 rounded-full bg-gradient-ai text-ai-foreground"
           >
             <Send className="size-4" />
@@ -174,39 +205,52 @@ function ChatScreen() {
   );
 }
 
-function replyFor(text: string): Message {
-  const t = text.toLowerCase();
-  const id = Date.now() + 1;
+function MessageRow({
+  message: m,
+  onBookingDone,
+}: {
+  message: ChatMessage;
+  onBookingDone: (code: string, bookingId: string) => void;
+}) {
+  return (
+    <div className="space-y-2">
+      <div
+        className={cn(
+          "max-w-[85%] rounded-2xl px-4 py-2.5 text-sm/6",
+          m.from === "ai"
+            ? "rounded-tl-sm bg-card shadow-soft"
+            : "ml-auto rounded-tr-sm bg-primary text-primary-foreground",
+        )}
+      >
+        {m.text}
+      </div>
 
-  if (t.includes("huỷ") || t.includes("hủy") || t.includes("chính sách")) {
-    return {
-      id,
-      from: "ai",
-      text: "Với hầu hết các phòng, bạn được miễn phí huỷ trước 48 giờ so với giờ nhận phòng. Riêng Suite Gia Đình là 72 giờ. Sau thời hạn này, đơn bị thu 50% giá trị.",
-    };
-  }
-  if (t.includes("ưu đãi") || t.includes("khuyến mãi")) {
-    return {
-      id,
-      from: "ai",
-      text: "Hiện có 3 ưu đãi: SUMMER25 giảm 25% cho kỳ nghỉ từ 2 đêm, SOMSOM giảm 15% khi đặt sớm 14 ngày, và STAY7 tặng 1 đêm khi ở 7 đêm.",
-    };
-  }
-  if (t.includes("4 người") || t.includes("gia đình")) {
-    const r = getRoom("family-suite");
-    return {
-      id,
-      from: "ai",
-      text: "Cho nhóm 4 người, mình gợi ý Suite Gia Đình — 52 m², 1 giường King và 2 giường đơn, có bếp nhỏ.",
-      rooms: [r],
-      cta: { label: "Đặt Suite Gia Đình", roomId: r.id },
-    };
-  }
-  return {
-    id,
-    from: "ai",
-    text: "Mình tìm được 2 phòng phù hợp cho 2 khách, ngày 22–25/08. Bạn xem thử nhé:",
-    rooms: [getRoom("deluxe-sea"), getRoom("garden-bungalow")],
-    cta: { label: "Đặt Deluxe View Biển", roomId: rooms[0]!.id },
-  };
+      {m.roomIds && m.roomIds.length > 0 && (
+        <div className="no-scrollbar -mx-4 flex gap-3 overflow-x-auto px-4 pb-1">
+          {m.roomIds.map((id) => (
+            <RoomCard key={id} room={getRoom(id)} variant="compact" />
+          ))}
+        </div>
+      )}
+
+      {m.bookingRoomId && (
+        <ChatBookingWidget roomId={m.bookingRoomId} onDone={onBookingDone} />
+      )}
+
+      {m.bookingId && (
+        <div className="flex gap-2">
+          <Button asChild size="sm">
+            <Link to="/thanh-toan/$id" params={{ id: m.bookingId }}>
+              Thanh toán ngay
+            </Link>
+          </Button>
+          <Button asChild size="sm" variant="outline">
+            <Link to="/don/$id" params={{ id: m.bookingId }}>
+              Xem đơn
+            </Link>
+          </Button>
+        </div>
+      )}
+    </div>
+  );
 }
