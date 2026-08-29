@@ -1,13 +1,21 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { CalendarDays, Check, Users } from "lucide-react";
 import { PhoneFrame } from "@/components/layout/PhoneFrame";
 import { ScreenHeader } from "@/components/layout/ScreenHeader";
 import { StepIndicator } from "@/components/smartstay/StepIndicator";
 import { PriceSummary } from "@/components/smartstay/PriceSummary";
+import { StayPicker } from "@/components/smartstay/StayPicker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { extraServices, formatVnd, getRoom, promos } from "@/data/mock";
+import {
+  SERVICE_FEE,
+  formatDay,
+  nightsBetween,
+  serviceTotal as sumServices,
+  useAppStore,
+} from "@/store/app-store";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/dat-phong/$id")({
@@ -28,26 +36,21 @@ export const Route = createFileRoute("/dat-phong/$id")({
   component: BookingScreen,
 });
 
-const NIGHTS = 3;
-
 function BookingScreen() {
   const { id } = Route.useParams();
+  const navigate = useNavigate();
   const room = getRoom(id);
+  const { search, setDraft } = useAppStore();
   const [services, setServices] = useState<string[]>([]);
   const [code, setCode] = useState("");
   const [applied, setApplied] = useState<(typeof promos)[number] | null>(null);
+  const [editStay, setEditStay] = useState(false);
 
-  const roomTotal = room.price * NIGHTS;
-  const serviceTotal = useMemo(
-    () =>
-      extraServices
-        .filter((s) => services.includes(s.id))
-        .reduce((sum, s) => sum + s.price, 0),
-    [services],
-  );
-  const fee = 80000;
+  const nights = nightsBetween(search.checkIn, search.checkOut);
+  const roomTotal = room.price * nights;
+  const serviceTotal = useMemo(() => sumServices(services), [services]);
   const discount = applied ? Math.round((roomTotal + serviceTotal) * applied.discount) : 0;
-  const total = roomTotal + serviceTotal + fee - discount;
+  const total = roomTotal + serviceTotal + SERVICE_FEE - discount;
 
   const toggle = (sid: string) =>
     setServices((s) => (s.includes(sid) ? s.filter((x) => x !== sid) : [...s, sid]));
@@ -55,6 +58,21 @@ function BookingScreen() {
   const apply = () => {
     const found = promos.find((p) => p.code.toLowerCase() === code.trim().toLowerCase());
     setApplied(found ?? null);
+  };
+
+  const goPay = () => {
+    setDraft({
+      roomId: room.id,
+      serviceIds: services,
+      promoCode: applied?.code ?? null,
+      discount,
+      nights,
+      guests: search.guests,
+      checkIn: formatDay(search.checkIn),
+      checkOut: formatDay(search.checkOut),
+      total,
+    });
+    navigate({ to: "/thanh-toan/$id", params: { id: room.id } });
   };
 
   return (
@@ -73,13 +91,23 @@ function BookingScreen() {
           <div className="min-w-0 flex-1 text-sm">
             <p className="font-semibold">{room.name}</p>
             <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
-              <CalendarDays className="size-3" /> 22/08 – 25/08 · {NIGHTS} đêm
+              <CalendarDays className="size-3" /> {formatDay(search.checkIn)} –{" "}
+              {formatDay(search.checkOut)} · {nights} đêm
             </p>
             <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Users className="size-3" /> 2 khách · 1 phòng
+              <Users className="size-3" /> {search.guests} khách · {search.rooms} phòng
             </p>
+            <button
+              type="button"
+              onClick={() => setEditStay((v) => !v)}
+              className="mt-1 text-xs font-semibold text-primary"
+            >
+              {editStay ? "Đóng" : "Đổi ngày / số khách"}
+            </button>
           </div>
         </div>
+
+        {editStay && <StayPicker />}
 
         <section>
           <h2 className="mb-3 font-display text-lg">Dịch vụ đi kèm</h2>
@@ -120,6 +148,7 @@ function BookingScreen() {
           <div className="flex gap-2">
             <Input
               value={code}
+              maxLength={20}
               onChange={(e) => setCode(e.target.value)}
               placeholder="Nhập mã, ví dụ SUMMER25"
             />
@@ -142,9 +171,9 @@ function BookingScreen() {
 
         <PriceSummary
           lines={[
-            { label: `${formatVnd(room.price)} × ${NIGHTS} đêm`, value: roomTotal },
+            { label: `${formatVnd(room.price)} × ${nights} đêm`, value: roomTotal },
             ...(serviceTotal ? [{ label: "Dịch vụ đi kèm", value: serviceTotal }] : []),
-            { label: "Phí dịch vụ", value: fee },
+            { label: "Phí dịch vụ", value: SERVICE_FEE },
             ...(discount ? [{ label: `Khuyến mãi ${applied?.code}`, value: -discount }] : []),
           ]}
           total={total}
@@ -157,10 +186,8 @@ function BookingScreen() {
           <p className="text-xs text-muted-foreground">Tổng cộng</p>
           <p className="text-lg font-bold text-primary">{formatVnd(total)}</p>
         </div>
-        <Button asChild size="lg" className="flex-1">
-          <Link to="/thanh-toan/$id" params={{ id: room.id }}>
-            Tiếp tục
-          </Link>
+        <Button size="lg" className="flex-1" onClick={goPay}>
+          Tiếp tục
         </Button>
       </div>
     </PhoneFrame>
