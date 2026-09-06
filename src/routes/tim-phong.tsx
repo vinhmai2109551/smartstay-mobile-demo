@@ -88,6 +88,11 @@ function SearchScreen() {
               </SheetHeader>
               <div className="space-y-6 px-4 pb-8">
                 <div>
+                  <p className="mb-2 text-sm font-semibold">Ngày ở & số khách</p>
+                  <StayPicker />
+                </div>
+                <div>
+
                   <p className="mb-2 text-sm font-semibold">Giá tối đa mỗi đêm</p>
                   <Slider
                     value={[maxPrice]}
@@ -144,7 +149,9 @@ function SearchScreen() {
 
       <div className="px-4 py-4">
         <div className="mb-3 flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">{results.length} phòng phù hợp</p>
+          <p className="text-sm text-muted-foreground">
+            {loading ? "Đang tìm phòng..." : `${results.length} phòng phù hợp`}
+          </p>
           {picked.length > 0 && (
             <button
               type="button"
@@ -156,7 +163,9 @@ function SearchScreen() {
           )}
         </div>
 
-        {results.length === 0 ? (
+        {loading ? (
+          <RoomListSkeleton />
+        ) : results.length === 0 ? (
           <EmptyState
             icon={<BedDouble className="size-6" />}
             title="Không tìm thấy phòng"
@@ -169,6 +178,7 @@ function SearchScreen() {
             ))}
           </div>
         )}
+
       </div>
     </AppShell>
   );
