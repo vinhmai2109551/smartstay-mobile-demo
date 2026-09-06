@@ -4,12 +4,16 @@ import { Search, SlidersHorizontal, X, BedDouble } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { RoomCard } from "@/components/smartstay/RoomCard";
 import { EmptyState } from "@/components/smartstay/EmptyState";
+import { RoomListSkeleton } from "@/components/smartstay/Skeletons";
+import { StayPicker, StaySummaryText } from "@/components/smartstay/StayPicker";
+import { useFakeLoading } from "@/hooks/use-fake-loading";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { amenities, formatVnd, rooms } from "@/data/mock";
 import { cn } from "@/lib/utils";
+
 
 export const Route = createFileRoute("/tim-phong")({
   head: () => ({
