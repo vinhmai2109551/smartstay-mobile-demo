@@ -4,7 +4,10 @@ import { CalendarX2, CalendarDays, ChevronRight } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { BookingStatusBadge } from "@/components/smartstay/BookingStatusBadge";
 import { EmptyState } from "@/components/smartstay/EmptyState";
-import { bookings, formatVnd, getRoom } from "@/data/mock";
+import { BookingListSkeleton } from "@/components/smartstay/Skeletons";
+import { useFakeLoading } from "@/hooks/use-fake-loading";
+import { formatVnd, getRoom } from "@/data/mock";
+import { useAppStore } from "@/store/app-store";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/don-cua-toi")({
@@ -30,6 +33,8 @@ const tabs = [
 
 function BookingsScreen() {
   const [tab, setTab] = useState<(typeof tabs)[number]["id"]>("upcoming");
+  const { bookings } = useAppStore();
+  const loading = useFakeLoading(600, [tab]);
   const list = bookings.filter((b) => b.group === tab);
 
   return (
@@ -55,7 +60,11 @@ function BookingsScreen() {
         </div>
       </header>
 
-      {list.length === 0 ? (
+      {loading ? (
+        <div className="px-4 py-4">
+          <BookingListSkeleton count={3} />
+        </div>
+      ) : list.length === 0 ? (
         <EmptyState
           icon={<CalendarX2 className="size-6" />}
           title="Chưa có đơn nào"

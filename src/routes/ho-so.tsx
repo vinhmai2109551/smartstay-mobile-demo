@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { Button } from "@/components/ui/button";
-import { bookings } from "@/data/mock";
+import { useAppStore } from "@/store/app-store";
 
 export const Route = createFileRoute("/ho-so")({
   head: () => ({
@@ -39,7 +39,14 @@ const groups = [
 ];
 
 function ProfileScreen() {
+  const { bookings, user, signOut } = useAppStore();
   const upcoming = bookings.filter((b) => b.group === "upcoming").length;
+  const initials = (user?.name ?? "SS")
+    .split(" ")
+    .slice(-2)
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase();
 
   return (
     <AppShell>
@@ -50,12 +57,12 @@ function ProfileScreen() {
       <div className="-mt-10 px-4">
         <div className="flex items-center gap-3 rounded-3xl bg-card p-4 shadow-card">
           <span className="flex size-14 items-center justify-center rounded-2xl bg-gradient-ai text-xl font-bold text-ai-foreground">
-            MA
+            {initials}
           </span>
           <div className="min-w-0 flex-1">
-            <p className="font-semibold">Nguyễn Minh Anh</p>
-            <p className="truncate text-xs text-muted-foreground">minhanh@email.com</p>
-            <p className="text-xs text-muted-foreground">0905 123 456</p>
+            <p className="font-semibold">{user?.name ?? "Khách"}</p>
+            <p className="truncate text-xs text-muted-foreground">{user?.email ?? "—"}</p>
+            <p className="text-xs text-muted-foreground">{user?.phone ?? "—"}</p>
           </div>
         </div>
 
@@ -85,7 +92,7 @@ function ProfileScreen() {
           ))}
 
           <Button asChild variant="outline" size="lg" className="w-full gap-2 text-destructive">
-            <Link to="/dang-nhap">
+            <Link to="/dang-nhap" onClick={() => signOut()}>
               <LogOut className="size-4" /> Đăng xuất
             </Link>
           </Button>

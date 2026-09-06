@@ -6,7 +6,9 @@ import { ScreenHeader } from "@/components/layout/ScreenHeader";
 import { RatingStars } from "@/components/smartstay/RatingStars";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { getBooking, getRoom } from "@/data/mock";
+import { EmptyState } from "@/components/smartstay/EmptyState";
+import { getRoom } from "@/data/mock";
+import { useAppStore, useBookingById } from "@/store/app-store";
 
 export const Route = createFileRoute("/danh-gia/$id")({
   head: () => ({
@@ -27,7 +29,8 @@ const criteria = ["Sạch sẽ", "Vị trí", "Dịch vụ", "Đáng giá tiền
 
 function ReviewScreen() {
   const { id } = Route.useParams();
-  const booking = getBooking(id);
+  const booking = useBookingById(id);
+  const { markReviewed } = useAppStore();
   const room = getRoom(booking.roomId);
   const [overall, setOverall] = useState(5);
   const [scores, setScores] = useState<Record<string, number>>({});
@@ -59,6 +62,7 @@ function ReviewScreen() {
         className="space-y-6 px-4 pb-10 pt-6"
         onSubmit={(e) => {
           e.preventDefault();
+          markReviewed(booking.id);
           setSent(true);
         }}
       >
