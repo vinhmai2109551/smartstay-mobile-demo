@@ -4,12 +4,16 @@ import { Search, SlidersHorizontal, X, BedDouble } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { RoomCard } from "@/components/smartstay/RoomCard";
 import { EmptyState } from "@/components/smartstay/EmptyState";
+import { RoomListSkeleton } from "@/components/smartstay/Skeletons";
+import { StayPicker, StaySummaryText } from "@/components/smartstay/StayPicker";
+import { useFakeLoading } from "@/hooks/use-fake-loading";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { amenities, formatVnd, rooms } from "@/data/mock";
 import { cn } from "@/lib/utils";
+
 
 export const Route = createFileRoute("/tim-phong")({
   head: () => ({
@@ -36,6 +40,8 @@ function SearchScreen() {
   const [type, setType] = useState<string>("Tất cả");
   const [maxPrice, setMaxPrice] = useState(2500000);
   const [picked, setPicked] = useState<string[]>([]);
+  const loading = useFakeLoading(700, [keyword, type, maxPrice, picked.length]);
+
 
   const results = useMemo(
     () =>
@@ -56,7 +62,10 @@ function SearchScreen() {
     <AppShell>
       <header className="sticky top-0 z-20 border-b border-border bg-card/95 px-4 pb-3 pt-5 backdrop-blur">
         <h1 className="font-display text-xl">Tìm phòng trống</h1>
-        <p className="text-xs text-muted-foreground">22/08 – 25/08 · 2 khách</p>
+        <p className="text-xs text-muted-foreground">
+          <StaySummaryText />
+        </p>
+
         <div className="mt-3 flex gap-2">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -79,6 +88,11 @@ function SearchScreen() {
               </SheetHeader>
               <div className="space-y-6 px-4 pb-8">
                 <div>
+                  <p className="mb-2 text-sm font-semibold">Ngày ở & số khách</p>
+                  <StayPicker />
+                </div>
+                <div>
+
                   <p className="mb-2 text-sm font-semibold">Giá tối đa mỗi đêm</p>
                   <Slider
                     value={[maxPrice]}
@@ -135,7 +149,9 @@ function SearchScreen() {
 
       <div className="px-4 py-4">
         <div className="mb-3 flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">{results.length} phòng phù hợp</p>
+          <p className="text-sm text-muted-foreground">
+            {loading ? "Đang tìm phòng..." : `${results.length} phòng phù hợp`}
+          </p>
           {picked.length > 0 && (
             <button
               type="button"
@@ -147,7 +163,9 @@ function SearchScreen() {
           )}
         </div>
 
-        {results.length === 0 ? (
+        {loading ? (
+          <RoomListSkeleton />
+        ) : results.length === 0 ? (
           <EmptyState
             icon={<BedDouble className="size-6" />}
             title="Không tìm thấy phòng"
@@ -160,6 +178,7 @@ function SearchScreen() {
             ))}
           </div>
         )}
+
       </div>
     </AppShell>
   );

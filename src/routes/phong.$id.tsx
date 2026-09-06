@@ -11,6 +11,8 @@ import {
   Sparkles,
 } from "lucide-react";
 import { PhoneFrame } from "@/components/layout/PhoneFrame";
+import { RoomDetailSkeleton } from "@/components/smartstay/Skeletons";
+import { useFakeLoading } from "@/hooks/use-fake-loading";
 import { RatingStars } from "@/components/smartstay/RatingStars";
 import { Button } from "@/components/ui/button";
 import { amenityLabel, formatVnd, getRoom, reviews } from "@/data/mock";
@@ -36,6 +38,15 @@ function RoomDetail() {
   const room = getRoom(id);
   const router = useRouter();
   const [active, setActive] = useState(0);
+  const loading = useFakeLoading(600, [id]);
+
+  if (loading) {
+    return (
+      <PhoneFrame>
+        <RoomDetailSkeleton />
+      </PhoneFrame>
+    );
+  }
 
   return (
     <PhoneFrame>

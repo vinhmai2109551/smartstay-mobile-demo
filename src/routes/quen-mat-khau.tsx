@@ -1,6 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { MailCheck } from "lucide-react";
+import { Loader2, MailCheck } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { PhoneFrame } from "@/components/layout/PhoneFrame";
 import { ScreenHeader } from "@/components/layout/ScreenHeader";
 import { Button } from "@/components/ui/button";
@@ -19,8 +22,23 @@ export const Route = createFileRoute("/quen-mat-khau")({
   component: ForgotPassword,
 });
 
+const schema = z.object({
+  email: z.string().min(1, "Vui lòng nhập email").email("Email không hợp lệ"),
+});
+type FormValues = z.infer<typeof schema>;
+
 function ForgotPassword() {
   const [sent, setSent] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues: { email: "" } });
+
+  const onSubmit = async () => {
+    await new Promise((r) => setTimeout(r, 900));
+    setSent(true);
+  };
 
   return (
     <PhoneFrame>
@@ -52,19 +70,17 @@ function ForgotPassword() {
             <p className="mt-2 text-sm text-muted-foreground">
               Nhập email đã đăng ký, chúng tôi sẽ gửi liên kết đặt lại mật khẩu.
             </p>
-            <form
-              className="mt-6 space-y-4"
-              onSubmit={(e) => {
-                e.preventDefault();
-                setSent(true);
-              }}
-            >
+            <form className="mt-6 space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
               <div className="space-y-1.5">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="ban@email.com" required />
+                <Input id="email" type="email" placeholder="ban@email.com" {...register("email")} />
+                {errors.email && (
+                  <p className="text-xs font-medium text-destructive">{errors.email.message}</p>
+                )}
               </div>
-              <Button type="submit" size="lg" className="w-full">
-                Gửi liên kết
+              <Button type="submit" size="lg" className="w-full gap-2" disabled={isSubmitting}>
+                {isSubmitting && <Loader2 className="size-4 animate-spin" />}
+                {isSubmitting ? "Đang gửi..." : "Gửi liên kết"}
               </Button>
             </form>
           </>

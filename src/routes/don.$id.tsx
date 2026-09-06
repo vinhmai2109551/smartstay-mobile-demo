@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
 import { QrCode, CalendarDays, Users, Sparkles } from "lucide-react";
 import { PhoneFrame } from "@/components/layout/PhoneFrame";
 import { ScreenHeader } from "@/components/layout/ScreenHeader";
@@ -17,7 +16,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { getBooking, getRoom } from "@/data/mock";
+import { getRoom } from "@/data/mock";
+import { useAppStore, useBookingById } from "@/store/app-store";
 
 export const Route = createFileRoute("/don/$id")({
   head: () => ({
@@ -36,10 +36,10 @@ export const Route = createFileRoute("/don/$id")({
 
 function BookingDetail() {
   const { id } = Route.useParams();
-  const booking = getBooking(id);
+  const booking = useBookingById(id);
+  const { cancelBooking } = useAppStore();
   const room = getRoom(booking.roomId);
-  const [cancelled, setCancelled] = useState(booking.status === "cancelled");
-  const status = cancelled ? "cancelled" : booking.status;
+  const status = booking.status;
 
   const roomTotal = room.price * booking.nights;
   const fee = booking.total - roomTotal;
@@ -112,7 +112,7 @@ function BookingDetail() {
             </Button>
           )}
 
-          {booking.group === "upcoming" && !cancelled && (
+          {booking.group === "upcoming" && status !== "cancelled" && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button variant="ghost" size="lg" className="w-full text-destructive">
@@ -129,7 +129,7 @@ function BookingDetail() {
                 </AlertDialogHeader>
                 <AlertDialogFooter className="flex-row gap-2">
                   <AlertDialogCancel className="flex-1">Giữ đơn</AlertDialogCancel>
-                  <AlertDialogAction className="flex-1" onClick={() => setCancelled(true)}>
+                  <AlertDialogAction className="flex-1" onClick={() => cancelBooking(booking.id)}>
                     Xác nhận huỷ
                   </AlertDialogAction>
                 </AlertDialogFooter>
