@@ -6,7 +6,6 @@ import { ScreenHeader } from "@/components/layout/ScreenHeader";
 import { RatingStars } from "@/components/smartstay/RatingStars";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { EmptyState } from "@/components/smartstay/EmptyState";
 import { getRoom } from "@/data/mock";
 import { useAppStore, useBookingById } from "@/store/app-store";
 
