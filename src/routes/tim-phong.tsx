@@ -40,6 +40,8 @@ function SearchScreen() {
   const [type, setType] = useState<string>("Tất cả");
   const [maxPrice, setMaxPrice] = useState(2500000);
   const [picked, setPicked] = useState<string[]>([]);
+  const loading = useFakeLoading(700, [keyword, type, maxPrice, picked.length]);
+
 
   const results = useMemo(
     () =>
@@ -60,7 +62,10 @@ function SearchScreen() {
     <AppShell>
       <header className="sticky top-0 z-20 border-b border-border bg-card/95 px-4 pb-3 pt-5 backdrop-blur">
         <h1 className="font-display text-xl">Tìm phòng trống</h1>
-        <p className="text-xs text-muted-foreground">22/08 – 25/08 · 2 khách</p>
+        <p className="text-xs text-muted-foreground">
+          <StaySummaryText />
+        </p>
+
         <div className="mt-3 flex gap-2">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
