@@ -134,7 +134,7 @@ function Field({
 }: {
   label: string;
   id: string;
-  error?: string;
+  error?: string | undefined;
   children: React.ReactNode;
 }) {
   return (
