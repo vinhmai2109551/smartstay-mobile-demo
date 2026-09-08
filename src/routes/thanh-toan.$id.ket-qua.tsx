@@ -60,8 +60,9 @@ function PaymentResult() {
 
         <div className="mt-6 w-full rounded-2xl bg-card p-4 text-left shadow-soft">
           <Row label="Phòng" value={room.name} />
-          <Row label="Nhận / trả phòng" value="22/08 – 25/08/2026" />
-          <Row label="Mã đặt phòng" value="SS-8FK2QD" />
+          <Row label="Nhận / trả phòng" value={stay} />
+          <Row label="Số đêm" value={`${nights} đêm`} />
+          <Row label="Mã đặt phòng" value={booking?.code ?? "Đang cập nhật"} />
           <Row label="Số tiền" value={formatVnd(total)} />
         </div>
 
@@ -69,7 +70,7 @@ function PaymentResult() {
           {ok ? (
             <>
               <Button asChild size="lg" className="w-full">
-                <Link to="/don/$id" params={{ id: "bk1" }}>
+                <Link to="/don/$id" params={{ id: booking?.id ?? bookingId ?? "bk1" }}>
                   Xem chi tiết đơn
                 </Link>
               </Button>
