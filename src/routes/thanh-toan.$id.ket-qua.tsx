@@ -3,6 +3,7 @@ import { CheckCircle2, XCircle } from "lucide-react";
 import { PhoneFrame } from "@/components/layout/PhoneFrame";
 import { Button } from "@/components/ui/button";
 import { formatVnd, getRoom } from "@/data/mock";
+import { SERVICE_FEE, formatDay, nightsBetween, useAppStore } from "@/store/app-store";
 
 type Search = { status: "success" | "failed"; booking?: string };
 
@@ -24,9 +25,15 @@ export const Route = createFileRoute("/thanh-toan/$id/ket-qua")({
 
 function PaymentResult() {
   const { id } = Route.useParams();
-  const { status } = Route.useSearch();
-  const room = getRoom(id);
-  const total = room.price * 3 + 80000;
+  const { status, booking: bookingId } = Route.useSearch();
+  const { bookings, draft, search } = useAppStore();
+  const booking = bookings.find((b) => b.id === bookingId);
+  const room = getRoom(booking?.roomId ?? id);
+  const nights = booking?.nights ?? draft?.nights ?? nightsBetween(search.checkIn, search.checkOut);
+  const total = booking?.total ?? draft?.total ?? room.price * nights + SERVICE_FEE;
+  const stay = booking
+    ? `${booking.checkIn} – ${booking.checkOut}`
+    : `${formatDay(search.checkIn)} – ${formatDay(search.checkOut)}`;
   const ok = status === "success";
 
   return (
