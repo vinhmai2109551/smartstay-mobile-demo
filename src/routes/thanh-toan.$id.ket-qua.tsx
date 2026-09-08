@@ -4,11 +4,12 @@ import { PhoneFrame } from "@/components/layout/PhoneFrame";
 import { Button } from "@/components/ui/button";
 import { formatVnd, getRoom } from "@/data/mock";
 
-type Search = { status: "success" | "failed" };
+type Search = { status: "success" | "failed"; booking?: string };
 
 export const Route = createFileRoute("/thanh-toan/$id/ket-qua")({
   validateSearch: (search: Record<string, unknown>): Search => ({
     status: search["status"] === "failed" ? "failed" : "success",
+    ...(typeof search["booking"] === "string" ? { booking: search["booking"] } : {}),
   }),
   head: () => ({
     meta: [
