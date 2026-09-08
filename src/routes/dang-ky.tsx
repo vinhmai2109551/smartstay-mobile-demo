@@ -35,7 +35,9 @@ const schema = z.object({
     .min(8, "Mật khẩu tối thiểu 8 ký tự")
     .regex(/[A-Za-z]/, "Mật khẩu cần ít nhất 1 chữ cái")
     .regex(/\d/, "Mật khẩu cần ít nhất 1 chữ số"),
-  accept: z.literal(true, { message: "Bạn cần đồng ý với điều khoản" }),
+  accept: z.boolean().refine((v) => v === true, {
+    message: "Bạn cần đồng ý với điều khoản",
+  }),
 });
 type FormValues = z.infer<typeof schema>;
 
@@ -88,9 +90,7 @@ function SignUp() {
               <Checkbox
                 className="mt-0.5"
                 onCheckedChange={(v) =>
-                  setValue("accept", v === true ? true : (false as never), {
-                    shouldValidate: true,
-                  })
+                  setValue("accept", v === true, { shouldValidate: true })
                 }
               />
               <span>
