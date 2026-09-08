@@ -3,12 +3,14 @@ import { CheckCircle2, XCircle } from "lucide-react";
 import { PhoneFrame } from "@/components/layout/PhoneFrame";
 import { Button } from "@/components/ui/button";
 import { formatVnd, getRoom } from "@/data/mock";
+import { SERVICE_FEE, formatDay, nightsBetween, useAppStore } from "@/store/app-store";
 
-type Search = { status: "success" | "failed" };
+type Search = { status: "success" | "failed"; booking?: string };
 
 export const Route = createFileRoute("/thanh-toan/$id/ket-qua")({
   validateSearch: (search: Record<string, unknown>): Search => ({
     status: search["status"] === "failed" ? "failed" : "success",
+    ...(typeof search["booking"] === "string" ? { booking: search["booking"] } : {}),
   }),
   head: () => ({
     meta: [
@@ -23,9 +25,15 @@ export const Route = createFileRoute("/thanh-toan/$id/ket-qua")({
 
 function PaymentResult() {
   const { id } = Route.useParams();
-  const { status } = Route.useSearch();
-  const room = getRoom(id);
-  const total = room.price * 3 + 80000;
+  const { status, booking: bookingId } = Route.useSearch();
+  const { bookings, draft, search } = useAppStore();
+  const booking = bookings.find((b) => b.id === bookingId);
+  const room = getRoom(booking?.roomId ?? id);
+  const nights = booking?.nights ?? draft?.nights ?? nightsBetween(search.checkIn, search.checkOut);
+  const total = booking?.total ?? draft?.total ?? room.price * nights + SERVICE_FEE;
+  const stay = booking
+    ? `${booking.checkIn} – ${booking.checkOut}`
+    : `${formatDay(search.checkIn)} – ${formatDay(search.checkOut)}`;
   const ok = status === "success";
 
   return (
@@ -52,8 +60,9 @@ function PaymentResult() {
 
         <div className="mt-6 w-full rounded-2xl bg-card p-4 text-left shadow-soft">
           <Row label="Phòng" value={room.name} />
-          <Row label="Nhận / trả phòng" value="22/08 – 25/08/2026" />
-          <Row label="Mã đặt phòng" value="SS-8FK2QD" />
+          <Row label="Nhận / trả phòng" value={stay} />
+          <Row label="Số đêm" value={`${nights} đêm`} />
+          <Row label="Mã đặt phòng" value={booking?.code ?? "Đang cập nhật"} />
           <Row label="Số tiền" value={formatVnd(total)} />
         </div>
 
@@ -61,7 +70,7 @@ function PaymentResult() {
           {ok ? (
             <>
               <Button asChild size="lg" className="w-full">
-                <Link to="/don/$id" params={{ id: "bk1" }}>
+                <Link to="/don/$id" params={{ id: booking?.id ?? bookingId ?? "bk1" }}>
                   Xem chi tiết đơn
                 </Link>
               </Button>
