@@ -4,10 +4,11 @@ import { ChevronLeft, RotateCcw, Send, Sparkles } from "lucide-react";
 import { PhoneFrame } from "@/components/layout/PhoneFrame";
 import { RoomCard } from "@/components/smartstay/RoomCard";
 import { ChatBookingWidget } from "@/components/smartstay/ChatBookingWidget";
+import { ChatStayCard } from "@/components/smartstay/ChatStayCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { formatVnd, getRoom } from "@/data/mock";
-import { replyFor } from "@/lib/chat-engine";
+import { guestsFrom, replyFor } from "@/lib/chat-engine";
 import { useAppStore, type ChatMessage } from "@/store/app-store";
 import { cn } from "@/lib/utils";
 
@@ -48,7 +49,7 @@ function ChatScreen() {
   const router = useRouter();
   const { room: roomParam } = Route.useSearch();
   const focusRoom = roomParam ? getRoom(roomParam) : null;
-  const { chat, setChat, resetChat } = useAppStore();
+  const { chat, setChat, resetChat, setSearch } = useAppStore();
 
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
@@ -81,6 +82,10 @@ function ChatScreen() {
     setInput("");
     setTyping(true);
 
+    // Số khách nhắc trong câu chat được áp thẳng vào bộ lọc chung.
+    const guests = guestsFrom(value);
+    if (guests && guests >= 1 && guests <= 12) setSearch({ guests });
+
     const reply = replyFor(value, focusRoom);
     setTimeout(() => {
       setTyping(false);
@@ -92,6 +97,7 @@ function ChatScreen() {
           text: reply.text,
           ...(reply.roomIds ? { roomIds: reply.roomIds } : {}),
           ...(reply.bookingRoomId ? { bookingRoomId: reply.bookingRoomId } : {}),
+          ...(reply.showStayPicker ? { showStayPicker: true } : {}),
         },
       ]);
     }, 900 + Math.min(1200, value.length * 18));
@@ -232,6 +238,8 @@ function MessageRow({
           ))}
         </div>
       )}
+
+      {m.showStayPicker && <ChatStayCard />}
 
       {m.bookingRoomId && (
         <ChatBookingWidget roomId={m.bookingRoomId} onDone={onBookingDone} />
