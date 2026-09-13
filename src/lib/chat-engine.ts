@@ -5,6 +5,8 @@ export type ChatReply = {
   roomIds?: string[];
   /** Mở widget đặt phòng ngay trong chat cho phòng này. */
   bookingRoomId?: string;
+  /** Hiện bộ chọn ngày trong chat + nút áp dụng sang trang tìm phòng. */
+  showStayPicker?: boolean;
 };
 
 /** Bỏ dấu + hạ chữ để so khớp linh hoạt hơn (viết có dấu / không dấu đều được). */
