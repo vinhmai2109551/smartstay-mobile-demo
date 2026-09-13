@@ -48,6 +48,8 @@ export type ChatMessage = {
   bookingRoomId?: string;
   /** Kết quả đặt phòng trong chat. */
   bookingId?: string;
+  /** Hiện bộ chọn ngày + nút chuyển sang trang tìm phòng. */
+  showStayPicker?: boolean;
 };
 
 type AppState = {
