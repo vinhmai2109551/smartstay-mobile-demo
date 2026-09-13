@@ -84,7 +84,7 @@ const detectIntent = (text: string): Intent => {
   return bestScore === 0 ? "help" : best;
 };
 
-const guestsFrom = (text: string): number | null => {
+export const guestsFrom = (text: string): number | null => {
   const t = normalize(text);
   const digit = t.match(/(\d+)\s*(nguoi|khach|ng)/);
   if (digit?.[1]) return Number(digit[1]);
@@ -112,7 +112,8 @@ export function replyFor(text: string, ctxRoom?: Room | null): ChatReply {
 
   if (intent === "greeting") {
     return {
-      text: "Chào bạn 👋 Mình có thể kiểm tra phòng trống, giải thích chính sách hoặc đặt phòng giúp bạn ngay trong khung chat. Bạn muốn ở ngày nào và đi mấy người?",
+      text: "Chào bạn 👋 Bạn chọn ngày ở và số khách ngay bên dưới, mình sẽ áp dụng luôn cho trang tìm phòng nhé.",
+      showStayPicker: true,
     };
   }
 
@@ -182,6 +183,7 @@ export function replyFor(text: string, ctxRoom?: Room | null): ChatReply {
       text: `Cho ${n} khách, mình tìm được ${fits.length} lựa chọn phù hợp. Gợi ý tốt nhất là ${fits[0]!.name} (tối đa ${fits[0]!.maxGuests} khách, ${fits[0]!.beds}).`,
       roomIds: fits.slice(0, 3).map((r) => r.id),
       bookingRoomId: fits[0]!.id,
+      showStayPicker: true,
     };
   }
 
@@ -195,6 +197,7 @@ export function replyFor(text: string, ctxRoom?: Room | null): ChatReply {
 
   if (intent === "help") {
     return {
+      showStayPicker: true,
       text: "Mình có thể giúp bạn: tìm phòng theo ngày & số khách, so sánh giá, giải thích chính sách huỷ, áp mã ưu đãi và đặt phòng ngay trong chat. Bạn thử nhắn kiểu \"phòng đôi view biển 2 người cuối tuần này\" nhé.",
     };
   }
@@ -208,5 +211,6 @@ export function replyFor(text: string, ctxRoom?: Room | null): ChatReply {
     text: `Mình tìm được ${picked.length} phòng phù hợp${guests ? ` cho ${guests} khách` : ""}. Bạn xem thử nhé — muốn đặt phòng nào thì nhắn mình.`,
     roomIds: picked.map((r) => r.id),
     bookingRoomId: picked[0]!.id,
+    showStayPicker: true,
   };
 }
