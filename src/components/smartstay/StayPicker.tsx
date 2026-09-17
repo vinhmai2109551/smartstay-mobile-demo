@@ -49,7 +49,11 @@ export function StayPicker({ className }: { className?: string }) {
             </span>
           </button>
         </PopoverTrigger>
-        <PopoverContent align="center" className="max-w-[calc(100vw-1rem)] overflow-x-auto rounded-2xl p-1 min-[380px]:w-auto min-[380px]:rounded-3xl min-[380px]:p-2">
+        <PopoverContent
+          align="center"
+          collisionPadding={{ top: 8, right: 8, bottom: 80, left: 8 }}
+          className="max-w-[calc(100vw-1rem)] overflow-x-auto rounded-2xl p-1 min-[380px]:w-auto min-[380px]:rounded-3xl min-[380px]:p-2"
+        >
           <Calendar
             mode="range"
             locale={vi}
