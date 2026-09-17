@@ -81,7 +81,7 @@ function HomeScreen() {
 
       <section className="mt-6">
         <SectionTitle title="Phòng nổi bật" to="/tim-phong" />
-        <div className="no-scrollbar flex gap-3 overflow-x-auto px-4 pb-2">
+        <div className="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain px-4 pb-2">
           {rooms.map((r) => (
             <RoomCard key={r.id} room={r} variant="compact" />
           ))}

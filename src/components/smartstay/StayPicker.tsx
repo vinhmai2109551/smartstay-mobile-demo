@@ -32,24 +32,28 @@ export function StayPicker({ className }: { className?: string }) {
         <PopoverTrigger asChild>
           <button
             type="button"
-            className="grid w-full grid-cols-2 gap-3 text-left"
+            className="grid w-full min-w-0 grid-cols-2 gap-2 text-left min-[380px]:gap-3"
             aria-label="Chọn ngày nhận và trả phòng"
           >
-            <span className="block rounded-2xl bg-secondary/70 p-3">
-              <span className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
+            <span className="block min-w-0 rounded-xl bg-secondary/70 p-2.5 min-[380px]:rounded-2xl min-[380px]:p-3">
+              <span className="flex min-w-0 items-center gap-1 text-[10px] font-medium text-muted-foreground min-[380px]:gap-1.5 min-[380px]:text-[11px]">
                 <CalendarDays className="size-4" /> Nhận phòng
               </span>
-              <span className="mt-1 block text-sm font-semibold">{formatDay(search.checkIn)}</span>
+              <span className="mt-1 block truncate text-xs font-semibold min-[380px]:text-sm">{formatDay(search.checkIn)}</span>
             </span>
-            <span className="block rounded-2xl bg-secondary/70 p-3">
-              <span className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
+            <span className="block min-w-0 rounded-xl bg-secondary/70 p-2.5 min-[380px]:rounded-2xl min-[380px]:p-3">
+              <span className="flex min-w-0 items-center gap-1 text-[10px] font-medium text-muted-foreground min-[380px]:gap-1.5 min-[380px]:text-[11px]">
                 <CalendarDays className="size-4" /> Trả phòng
               </span>
-              <span className="mt-1 block text-sm font-semibold">{formatDay(search.checkOut)}</span>
+              <span className="mt-1 block truncate text-xs font-semibold min-[380px]:text-sm">{formatDay(search.checkOut)}</span>
             </span>
           </button>
         </PopoverTrigger>
-        <PopoverContent align="center" className="w-auto rounded-3xl p-2">
+        <PopoverContent
+          align="center"
+          collisionPadding={{ top: 8, right: 8, bottom: 80, left: 8 }}
+          className="max-w-[calc(100vw-1rem)] overflow-x-auto rounded-2xl p-1 min-[380px]:w-auto min-[380px]:rounded-3xl min-[380px]:p-2"
+        >
           <Calendar
             mode="range"
             locale={vi}
@@ -65,11 +69,11 @@ export function StayPicker({ className }: { className?: string }) {
         </PopoverContent>
       </Popover>
 
-      <div className="rounded-2xl bg-secondary/70 p-3">
+      <div className="min-w-0 rounded-2xl bg-secondary/70 p-2.5 min-[380px]:p-3">
         <span className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
           <Users className="size-4" /> Số khách · số phòng
         </span>
-        <div className="mt-2 grid grid-cols-2 gap-3">
+        <div className="mt-2 grid min-w-0 grid-cols-1 gap-2 min-[350px]:grid-cols-2 min-[380px]:gap-3">
           <Stepper
             label="Khách"
             value={search.guests}
@@ -104,28 +108,28 @@ function Stepper({
   onChange: (v: number) => void;
 }) {
   return (
-    <div className="flex items-center justify-between rounded-xl bg-card px-2 py-1.5">
-      <span className="text-xs font-medium text-muted-foreground">{label}</span>
-      <span className="flex items-center gap-1">
+    <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-1 rounded-xl bg-card px-2 py-1.5">
+      <span className="truncate text-xs font-medium text-muted-foreground">{label}</span>
+      <span className="flex shrink-0 items-center gap-0.5 min-[380px]:gap-1">
         <Button
           type="button"
           size="icon"
           variant="outline"
           aria-label={`Giảm ${label}`}
           disabled={value <= min}
-          className="size-7 rounded-full"
+          className="size-7 shrink-0 rounded-full"
           onClick={() => onChange(Math.max(min, value - 1))}
         >
           <Minus className="size-3.5" />
         </Button>
-        <span className="w-6 text-center text-sm font-semibold">{value}</span>
+        <span className="w-5 text-center text-sm font-semibold min-[380px]:w-6">{value}</span>
         <Button
           type="button"
           size="icon"
           variant="outline"
           aria-label={`Tăng ${label}`}
           disabled={value >= max}
-          className="size-7 rounded-full"
+          className="size-7 shrink-0 rounded-full"
           onClick={() => onChange(Math.min(max, value + 1))}
         >
           <Plus className="size-3.5" />

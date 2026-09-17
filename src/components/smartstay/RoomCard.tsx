@@ -19,7 +19,7 @@ export function RoomCard({
         to="/phong/$id"
         params={{ id: room.id }}
         className={cn(
-          "block w-[210px] shrink-0 overflow-hidden rounded-2xl bg-card shadow-soft",
+          "block w-[min(210px,calc(100vw-3rem))] shrink-0 snap-start overflow-hidden rounded-2xl bg-card shadow-soft",
           className,
         )}
       >
@@ -55,7 +55,7 @@ export function RoomCard({
       to="/phong/$id"
       params={{ id: room.id }}
       className={cn(
-        "flex gap-3 overflow-hidden rounded-2xl bg-card p-3 shadow-soft",
+        "grid min-w-0 grid-cols-[88px_minmax(0,1fr)] gap-2.5 overflow-hidden rounded-2xl bg-card p-2.5 shadow-soft min-[380px]:grid-cols-[112px_minmax(0,1fr)] min-[380px]:gap-3 min-[380px]:p-3",
         className,
       )}
     >
@@ -63,18 +63,18 @@ export function RoomCard({
         src={room.images[0]}
         alt={room.name}
         loading="lazy"
-        className="size-28 shrink-0 rounded-xl object-cover"
+        className="aspect-square size-full min-w-0 rounded-xl object-cover"
       />
       <div className="min-w-0 flex-1">
-        <div className="flex items-start justify-between gap-2">
-          <p className="truncate font-semibold">{room.name}</p>
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-1.5">
+          <p className="truncate text-sm font-semibold min-[380px]:text-base">{room.name}</p>
           <span className="flex shrink-0 items-center gap-1 text-xs font-medium">
             <Star className="size-3 fill-gold text-gold" />
             {room.rating}
           </span>
         </div>
         <p className="text-xs text-muted-foreground">{room.type}</p>
-        <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
+        <div className="mt-1.5 flex min-w-0 flex-wrap gap-x-2 gap-y-1 text-[10px] text-muted-foreground min-[380px]:mt-2 min-[380px]:gap-x-3 min-[380px]:text-[11px]">
           <span className="flex items-center gap-1">
             <Users className="size-3" /> {room.maxGuests} khách
           </span>
@@ -82,8 +82,8 @@ export function RoomCard({
             <Maximize className="size-3" /> {room.size} m²
           </span>
         </div>
-        <div className="mt-2 flex items-end gap-2">
-          <span className="text-base font-bold text-primary">{formatVnd(room.price)}</span>
+        <div className="mt-1.5 flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-0 min-[380px]:mt-2 min-[380px]:gap-x-2">
+          <span className="whitespace-nowrap text-sm font-bold text-primary min-[380px]:text-base">{formatVnd(room.price)}</span>
           {room.oldPrice && (
             <span className="text-xs text-muted-foreground line-through">
               {formatVnd(room.oldPrice)}

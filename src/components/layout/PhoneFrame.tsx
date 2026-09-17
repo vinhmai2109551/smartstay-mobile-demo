@@ -13,7 +13,7 @@ export function PhoneFrame({
     <div className="flex min-h-screen justify-center">
       <div
         className={cn(
-          "relative flex min-h-screen w-full max-w-[430px] flex-col bg-background shadow-card",
+          "relative flex min-h-screen w-full max-w-[430px] min-w-0 flex-col overflow-x-clip bg-background shadow-card",
           className,
         )}
       >
