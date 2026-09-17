@@ -128,14 +128,14 @@ function SearchScreen() {
           </Sheet>
         </div>
 
-        <div className="no-scrollbar -mx-4 mt-3 flex gap-2 overflow-x-auto px-4">
+        <div className="no-scrollbar -mx-4 mt-3 flex snap-x snap-mandatory gap-2 overflow-x-auto overscroll-x-contain px-4">
           {types.map((t) => (
             <button
               key={t}
               type="button"
               onClick={() => setType(t)}
               className={cn(
-                "shrink-0 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
+                "shrink-0 snap-start rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
                 type === t
                   ? "border-primary bg-primary text-primary-foreground"
                   : "border-border bg-card text-muted-foreground",

@@ -14,7 +14,7 @@ export function AppShell({
 }) {
   return (
     <PhoneFrame>
-      <div className={cn("flex-1 pb-4", className)}>{children}</div>
+      <div className={cn("min-w-0 flex-1 pb-4", className)}>{children}</div>
       {withTabBar && <TabBar />}
     </PhoneFrame>
   );

@@ -10,8 +10,8 @@ const items = [
 
 export function TabBar() {
   return (
-    <nav className="sticky bottom-0 z-30 mt-auto border-t border-border bg-card/95 backdrop-blur">
-      <div className="relative grid grid-cols-5 items-end px-2 pb-3 pt-2">
+    <nav className="sticky bottom-0 z-50 mt-auto min-w-0 border-t border-border bg-card/95 backdrop-blur-xl">
+      <div className="relative grid min-h-16 grid-cols-5 items-end gap-0.5 px-1 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] min-[380px]:px-2">
         {items.slice(0, 2).map((it) => (
           <TabLink key={it.to} {...it} />
         ))}
@@ -20,10 +20,10 @@ export function TabBar() {
           <Link
             to="/chat"
             aria-label="Chat AI"
-            className="-mt-8 flex size-16 flex-col items-center justify-center gap-0.5 rounded-full bg-gradient-ai text-ai-foreground shadow-ai transition-transform active:scale-95"
+            className="-mt-7 flex size-14 shrink-0 flex-col items-center justify-center gap-0.5 rounded-full bg-gradient-ai text-ai-foreground shadow-ai transition-transform active:scale-95 min-[380px]:-mt-8 min-[380px]:size-16"
           >
-            <Sparkles className="size-6" />
-            <span className="text-[10px] font-semibold">Chat AI</span>
+            <Sparkles className="size-5 min-[380px]:size-6" />
+            <span className="whitespace-nowrap text-[9px] font-semibold min-[380px]:text-[10px]">Chat AI</span>
           </Link>
         </div>
 
@@ -47,11 +47,11 @@ function TabLink({
   return (
     <Link
       to={to}
-      className="flex flex-col items-center gap-1 py-1 text-[11px] font-medium text-muted-foreground transition-colors"
+      className="flex min-w-0 flex-col items-center gap-1 py-1 text-[9px] font-medium text-muted-foreground transition-colors min-[380px]:text-[11px]"
       activeProps={{ className: "text-primary" }}
     >
-      <Icon className="size-5" />
-      <span>{label}</span>
+      <Icon className="size-[18px] shrink-0 min-[380px]:size-5" />
+      <span className="max-w-full whitespace-nowrap">{label}</span>
     </Link>
   );
 }
