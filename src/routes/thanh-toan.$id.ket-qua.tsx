@@ -5,12 +5,13 @@ import { Button } from "@/components/ui/button";
 import { formatVnd, getRoom } from "@/data/mock";
 import { SERVICE_FEE, formatDay, nightsBetween, useAppStore } from "@/store/app-store";
 
-type Search = { status: "success" | "failed"; booking?: string };
+type Search = { status: "success" | "failed"; booking?: string; method?: string };
 
 export const Route = createFileRoute("/thanh-toan/$id/ket-qua")({
   validateSearch: (search: Record<string, unknown>): Search => ({
     status: search["status"] === "failed" ? "failed" : "success",
     ...(typeof search["booking"] === "string" ? { booking: search["booking"] } : {}),
+    ...(typeof search["method"] === "string" ? { method: search["method"] } : {}),
   }),
   head: () => ({
     meta: [
@@ -23,18 +24,28 @@ export const Route = createFileRoute("/thanh-toan/$id/ket-qua")({
   component: PaymentResult,
 });
 
+const methodLabel: Record<string, string> = {
+  vietqr: "VietQR",
+  atm: "Thẻ nội địa / ATM",
+  momo: "Ví MoMo",
+  cash: "Trả tại quầy",
+};
+
 function PaymentResult() {
   const { id } = Route.useParams();
-  const { status, booking: bookingId } = Route.useSearch();
+  const { status, booking: bookingId, method } = Route.useSearch();
   const { bookings, draft, search } = useAppStore();
   const booking = bookings.find((b) => b.id === bookingId);
   const room = getRoom(booking?.roomId ?? id);
   const nights = booking?.nights ?? draft?.nights ?? nightsBetween(search.checkIn, search.checkOut);
   const total = booking?.total ?? draft?.total ?? room.price * nights + SERVICE_FEE;
+  const roomAmount = total - SERVICE_FEE;
   const stay = booking
     ? `${booking.checkIn} – ${booking.checkOut}`
     : `${formatDay(search.checkIn)} – ${formatDay(search.checkOut)}`;
   const ok = status === "success";
+  const now = new Date();
+  const paidAt = `${now.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })} ${formatDay(now)}`;
 
   return (
     <PhoneFrame>
@@ -42,8 +53,8 @@ function PaymentResult() {
         <span
           className={
             ok
-              ? "flex size-20 items-center justify-center rounded-full bg-success/12 text-success"
-              : "flex size-20 items-center justify-center rounded-full bg-destructive/12 text-destructive"
+              ? "flex size-20 animate-in zoom-in-50 items-center justify-center rounded-full bg-success/12 text-success duration-500"
+              : "flex size-20 animate-in zoom-in-50 items-center justify-center rounded-full bg-destructive/12 text-destructive duration-500"
           }
         >
           {ok ? <CheckCircle2 className="size-10" /> : <XCircle className="size-10" />}
@@ -59,11 +70,23 @@ function PaymentResult() {
         </p>
 
         <div className="mt-6 w-full rounded-2xl bg-card p-4 text-left shadow-soft">
+          <p className="mb-1 border-b border-dashed border-border pb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Biên lai thanh toán
+          </p>
           <Row label="Phòng" value={room.name} />
           <Row label="Nhận / trả phòng" value={stay} />
           <Row label="Số đêm" value={`${nights} đêm`} />
-          <Row label="Mã đặt phòng" value={booking?.code ?? "Đang cập nhật"} />
-          <Row label="Số tiền" value={formatVnd(total)} />
+          <Row label="Tiền phòng" value={formatVnd(roomAmount)} />
+          <Row label="Phí dịch vụ (gồm VAT)" value={formatVnd(SERVICE_FEE)} />
+          <div className="my-1 border-t border-dashed border-border" />
+          <Row label="Tổng thanh toán" value={formatVnd(total)} strong />
+          {ok && (
+            <>
+              <Row label="Phương thức" value={methodLabel[method ?? ""] ?? "VietQR"} />
+              <Row label="Thời gian giao dịch" value={paidAt} />
+              <Row label="Mã đặt phòng" value={booking?.code ?? "Đang cập nhật"} />
+            </>
+          )}
         </div>
 
         <div className="mt-8 w-full space-y-2">
@@ -96,11 +119,11 @@ function PaymentResult() {
   );
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function Row({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
   return (
     <div className="flex justify-between gap-3 py-1.5 text-sm">
       <span className="text-muted-foreground">{label}</span>
-      <span className="font-medium">{value}</span>
+      <span className={strong ? "font-bold text-primary" : "font-medium"}>{value}</span>
     </div>
   );
 }
