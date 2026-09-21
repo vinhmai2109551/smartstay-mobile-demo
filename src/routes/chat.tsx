@@ -86,7 +86,13 @@ function ChatScreen() {
     const guests = guestsFrom(value);
     if (guests && guests >= 1 && guests <= 12) setSearch({ guests });
 
-    const reply = replyFor(value, focusRoom);
+    // Nhớ phòng vừa được nhắc để các câu hỏi sau ("phòng này có...") hiểu đúng ngữ cảnh.
+    const mentioned = roomByText(value);
+    if (mentioned) ctxRoomRef.current = mentioned;
+    const reply = replyFor(value, ctxRoomRef.current ?? focusRoom);
+    if (reply.bookingRoomId) {
+      ctxRoomRef.current = rooms.find((r) => r.id === reply.bookingRoomId) ?? ctxRoomRef.current;
+    }
     setTimeout(() => {
       setTyping(false);
       setChat((prev) => [
