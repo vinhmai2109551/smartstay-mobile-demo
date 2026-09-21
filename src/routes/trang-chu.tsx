@@ -93,9 +93,11 @@ function HomeScreen() {
         <h2 className="mb-3 font-display text-lg">Ưu đãi đang có</h2>
         <div className="space-y-3">
           {promos.map((p) => (
-            <div
+            <Link
               key={p.id}
-              className="flex items-center gap-3 rounded-2xl border border-dashed border-accent/50 bg-accent/8 p-4"
+              to="/uu-dai/$id"
+              params={{ id: p.id }}
+              className="flex items-center gap-3 rounded-2xl border border-dashed border-accent/50 bg-accent/8 p-4 transition-colors active:bg-accent/15"
             >
               <span className="flex size-10 items-center justify-center rounded-xl bg-accent/15 text-accent">
                 <Tag className="size-5" />
