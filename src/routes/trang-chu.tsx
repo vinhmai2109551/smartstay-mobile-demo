@@ -109,7 +109,7 @@ function HomeScreen() {
               <span className="rounded-lg bg-accent px-2.5 py-1 text-[11px] font-bold text-accent-foreground">
                 {p.code}
               </span>
-            </div>
+            </Link>
           ))}
         </div>
       </section>
