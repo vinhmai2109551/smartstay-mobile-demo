@@ -27,6 +27,10 @@ type Intent =
   | "location"
   | "capacity"
   | "book"
+  | "pet"
+  | "service"
+  | "change_date"
+  | "payment"
   | "thanks"
   | "help"
   | "search";
@@ -62,6 +66,32 @@ const KEYWORDS: Record<Intent, string[]> = {
     "phong lon",
   ],
   book: ["dat phong", "dat luon", "chot", "book", "dat giup", "muon dat", "dat ngay"],
+  pet: ["thu cung", "cho meo", "con cho", "con meo", "pet", "mang cho", "mang meo"],
+  service: [
+    "dich vu",
+    "them dich vu",
+    "dua don",
+    "don san bay",
+    "xe dua don",
+    "spa",
+    "giat la",
+    "thue xe",
+    "tour",
+    "nhan phong som",
+    "tra phong muon",
+  ],
+  change_date: ["doi ngay", "doi lich", "doi sang", "dat lai ngay", "chuyen ngay", "gia han"],
+  payment: [
+    "thanh toan",
+    "chuyen khoan",
+    "momo",
+    "vietqr",
+    "the tin dung",
+    "tra truoc",
+    "tra sau",
+    "hoa don",
+    "vat",
+  ],
   thanks: ["cam on", "thanks", "thank you", "ok ban"],
   help: ["giup", "ho tro", "tu van", "goi y", "nen o phong nao"],
   search: ["phong", "trong", "con phong", "tim", "view bien", "suite", "bungalow", "dorm"],
@@ -93,7 +123,7 @@ export const guestsFrom = (text: string): number | null => {
   return found ? (words[found] ?? null) : null;
 };
 
-const roomByText = (text: string): Room | null => {
+export const roomByText = (text: string): Room | null => {
   const t = normalize(text);
   return (
     rooms.find((r) => t.includes(normalize(r.name))) ??
@@ -192,6 +222,34 @@ export function replyFor(text: string, ctxRoom?: Room | null): ChatReply {
     return {
       text: `Được luôn! Mình mở phiếu đặt ${target.name} ngay đây — bạn chọn ngày và số khách rồi xác nhận là xong.`,
       bookingRoomId: target.id,
+    };
+  }
+
+  if (intent === "pet") {
+    return {
+      text: "Khách sạn nhận thú cưng dưới 8kg tại các phòng tầng trệt (Garden View), phụ thu 200.000 ₫/đêm và cần báo trước 1 ngày. Các phòng Suite và Dorm hiện chưa nhận thú cưng bạn nhé.",
+      roomIds: [rooms.find((r) => normalize(r.name).includes("garden"))?.id ?? rooms[0]!.id],
+    };
+  }
+
+  if (intent === "service") {
+    const target = mentioned ?? rooms[0]!;
+    return {
+      text: `Dịch vụ thêm bạn có thể chọn khi đặt ${target.name}: đưa đón sân bay (250.000 ₫/lượt), ăn sáng buffet (120.000 ₫/khách), nhận phòng sớm 10:00 (150.000 ₫), trả phòng muộn 15:00 (150.000 ₫) và giặt là theo kg. Mình mở phiếu đặt để bạn chọn nhé?`,
+      bookingRoomId: target.id,
+    };
+  }
+
+  if (intent === "change_date") {
+    return {
+      text: "Đổi ngày được miễn phí 1 lần nếu báo trước 7 ngày (chênh lệch giá sẽ tính thêm nếu có). Bạn chọn ngày mới ngay bên dưới, mình sẽ kiểm tra phòng trống theo ngày đó.",
+      showStayPicker: true,
+    };
+  }
+
+  if (intent === "payment") {
+    return {
+      text: "Bạn có thể thanh toán bằng VietQR (quét mã ngân hàng), chuyển khoản ATM hoặc ví MoMo. Phòng được giữ 10 phút trong lúc chờ thanh toán, xong là có biên lai và mã QR check-in ngay trong đơn.",
     };
   }
 
