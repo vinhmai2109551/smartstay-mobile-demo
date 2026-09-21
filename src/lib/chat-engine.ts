@@ -27,6 +27,10 @@ type Intent =
   | "location"
   | "capacity"
   | "book"
+  | "pet"
+  | "service"
+  | "change_date"
+  | "payment"
   | "thanks"
   | "help"
   | "search";
