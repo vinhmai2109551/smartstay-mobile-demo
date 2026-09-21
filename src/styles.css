@@ -191,3 +191,41 @@
     display: none;
   }
 }
+
+/* Hiệu ứng xuất hiện mềm mại cho card, slide onboarding... */
+@keyframes ss-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ss-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@utility animate-rise {
+  animation: ss-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@utility animate-fade {
+  animation: ss-fade 0.5s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

@@ -19,7 +19,7 @@ export function RoomCard({
         to="/phong/$id"
         params={{ id: room.id }}
         className={cn(
-          "block w-[min(210px,calc(100vw-3rem))] shrink-0 snap-start overflow-hidden rounded-2xl bg-card shadow-soft",
+          "animate-rise block w-[min(210px,calc(100vw-3rem))] shrink-0 snap-start overflow-hidden rounded-2xl bg-card shadow-soft transition-transform active:scale-[0.98]",
           className,
         )}
       >
@@ -55,7 +55,7 @@ export function RoomCard({
       to="/phong/$id"
       params={{ id: room.id }}
       className={cn(
-        "grid min-w-0 grid-cols-[88px_minmax(0,1fr)] gap-2.5 overflow-hidden rounded-2xl bg-card p-2.5 shadow-soft min-[380px]:grid-cols-[112px_minmax(0,1fr)] min-[380px]:gap-3 min-[380px]:p-3",
+        "animate-rise grid min-w-0 grid-cols-[88px_minmax(0,1fr)] gap-2.5 overflow-hidden rounded-2xl bg-card p-2.5 shadow-soft transition-transform active:scale-[0.99] min-[380px]:grid-cols-[112px_minmax(0,1fr)] min-[380px]:gap-3 min-[380px]:p-3",
         className,
       )}
     >
