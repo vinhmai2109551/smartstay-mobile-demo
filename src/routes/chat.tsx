@@ -7,8 +7,8 @@ import { ChatBookingWidget } from "@/components/smartstay/ChatBookingWidget";
 import { ChatStayCard } from "@/components/smartstay/ChatStayCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { formatVnd, getRoom } from "@/data/mock";
-import { guestsFrom, replyFor } from "@/lib/chat-engine";
+import { formatVnd, getRoom, rooms, type Room } from "@/data/mock";
+import { guestsFrom, replyFor, roomByText } from "@/lib/chat-engine";
 import { useAppStore, type ChatMessage } from "@/store/app-store";
 import { cn } from "@/lib/utils";
 
@@ -54,6 +54,7 @@ function ChatScreen() {
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
+  const ctxRoomRef = useRef<Room | null>(focusRoom);
 
   // Tin nhắn chào mừng (chỉ tạo khi lịch sử đang trống).
   useEffect(() => {
