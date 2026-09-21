@@ -87,7 +87,7 @@ function NotificationsScreen() {
       <ScreenHeader
         title="Thông báo"
         subtitle={unread > 0 ? `${unread} thông báo chưa đọc` : "Bạn đã đọc hết"}
-        action={
+        right={
           unread > 0 ? (
             <button
               type="button"

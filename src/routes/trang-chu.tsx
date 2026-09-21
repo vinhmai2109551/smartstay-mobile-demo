@@ -44,13 +44,14 @@ function HomeScreen() {
               <MapPin className="size-3" /> {hotel.address}
             </p>
           </div>
-          <button
-            type="button"
+          <Link
+            to="/thong-bao"
             aria-label="Thông báo"
-            className="flex size-9 items-center justify-center rounded-full bg-card/20 backdrop-blur"
+            className="relative flex size-9 items-center justify-center rounded-full bg-card/20 backdrop-blur"
           >
             <Bell className="size-4" />
-          </button>
+            <span className="absolute right-2 top-2 size-2 rounded-full bg-accent" />
+          </Link>
         </div>
         <div className="absolute inset-x-0 bottom-4 flex items-center gap-2 px-4 text-primary-foreground">
           <Star className="size-4 fill-gold text-gold" />
