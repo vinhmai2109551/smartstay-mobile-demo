@@ -71,7 +71,7 @@ function Onboarding() {
             <span className="font-display text-lg font-semibold">SmartStay</span>
           </div>
 
-          <div>
+          <div key={step} className="animate-rise">
             <span className="mb-5 flex size-12 items-center justify-center rounded-2xl bg-card/15 backdrop-blur">
               <Icon className="size-6" />
             </span>
@@ -84,8 +84,8 @@ function Onboarding() {
                   key={s.title}
                   className={
                     i === step
-                      ? "h-1.5 w-7 rounded-full bg-accent"
-                      : "h-1.5 w-3 rounded-full bg-card/40"
+                      ? "h-1.5 w-7 rounded-full bg-accent transition-all duration-300"
+                      : "h-1.5 w-3 rounded-full bg-card/40 transition-all duration-300"
                   }
                 />
               ))}
