@@ -47,10 +47,10 @@ function TabLink({
   return (
     <Link
       to={to}
-      className="flex min-w-0 flex-col items-center gap-1 py-1 text-[9px] font-medium text-muted-foreground transition-colors min-[380px]:text-[11px]"
+      className="group flex min-w-0 flex-col items-center gap-1 py-1 text-[9px] font-medium text-muted-foreground transition-colors active:scale-95 min-[380px]:text-[11px]"
       activeProps={{ className: "text-primary" }}
     >
-      <Icon className="size-[18px] shrink-0 min-[380px]:size-5" />
+      <Icon className="size-[18px] shrink-0 transition-transform duration-200 group-active:scale-90 group-data-[status=active]:-translate-y-0.5 min-[380px]:size-5" />
       <span className="max-w-full whitespace-nowrap">{label}</span>
     </Link>
   );
