@@ -123,7 +123,7 @@ export const guestsFrom = (text: string): number | null => {
   return found ? (words[found] ?? null) : null;
 };
 
-const roomByText = (text: string): Room | null => {
+export const roomByText = (text: string): Room | null => {
   const t = normalize(text);
   return (
     rooms.find((r) => t.includes(normalize(r.name))) ??
