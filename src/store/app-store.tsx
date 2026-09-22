@@ -167,7 +167,6 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [myReviews, setMyReviews] = useState<MyReview[]>([]);
   const [hydrated, setHydrated] = useState(false);
-  const signedOutRef = useRef(false);
 
   // Đọc dữ liệu đã lưu sau khi hydrate (tránh lệch giữa server và trình duyệt).
   useEffect(() => {
@@ -195,7 +194,6 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
 
   const signIn = useCallback((u: AppUser) => setUser(u), []);
   const signOut = useCallback(() => {
-    signedOutRef.current = true;
     setUser(null);
     setDraft(null);
     setChatState([]);
