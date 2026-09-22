@@ -29,10 +29,11 @@ const criteria = ["Sạch sẽ", "Vị trí", "Dịch vụ", "Đáng giá tiền
 function ReviewScreen() {
   const { id } = Route.useParams();
   const booking = useBookingById(id);
-  const { markReviewed } = useAppStore();
+  const { markReviewed, addReview } = useAppStore();
   const room = getRoom(booking.roomId);
   const [overall, setOverall] = useState(5);
   const [scores, setScores] = useState<Record<string, number>>({});
+  const [comment, setComment] = useState("");
   const [sent, setSent] = useState(false);
 
   if (sent) {
@@ -47,6 +48,9 @@ function ReviewScreen() {
             Đánh giá của bạn giúp SmartStay phục vụ tốt hơn cho những khách tiếp theo.
           </p>
           <Button asChild size="lg" className="mt-8 w-full">
+            <Link to="/danh-gia">Xem đánh giá của tôi</Link>
+          </Button>
+          <Button asChild size="lg" variant="outline" className="mt-3 w-full">
             <Link to="/don-cua-toi">Về danh sách đơn</Link>
           </Button>
         </div>
@@ -62,6 +66,12 @@ function ReviewScreen() {
         onSubmit={(e) => {
           e.preventDefault();
           markReviewed(booking.id);
+          addReview({
+            bookingId: booking.id,
+            roomId: booking.roomId,
+            rating: overall,
+            content: comment.trim(),
+          });
           setSent(true);
         }}
       >
@@ -108,6 +118,9 @@ function ReviewScreen() {
           <Textarea
             id="comment"
             rows={5}
+            value={comment}
+            maxLength={500}
+            onChange={(e) => setComment(e.target.value)}
             placeholder="Điều gì khiến bạn hài lòng hoặc cần cải thiện?"
           />
         </div>

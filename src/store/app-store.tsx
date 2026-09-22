@@ -2,6 +2,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -52,6 +53,16 @@ export type ChatMessage = {
   showStayPicker?: boolean;
 };
 
+/** Đánh giá do chính người dùng gửi trong app. */
+export type MyReview = {
+  id: string;
+  bookingId: string;
+  roomId: string;
+  rating: number;
+  content: string;
+  date: string;
+};
+
 type AppState = {
   user: AppUser | null;
   isAuthed: boolean;
@@ -59,6 +70,10 @@ type AppState = {
   bookings: Booking[];
   draft: BookingDraft | null;
   chat: ChatMessage[];
+  favorites: string[];
+  myReviews: MyReview[];
+  /** Đã đọc xong dữ liệu lưu trong máy chưa (tránh nhấp nháy khi tải lại trang). */
+  hydrated: boolean;
 };
 
 type AppActions = {
@@ -78,6 +93,9 @@ type AppActions = {
   }) => Booking;
   cancelBooking: (id: string) => void;
   markReviewed: (id: string) => void;
+  addReview: (input: { bookingId: string; roomId: string; rating: number; content: string }) => void;
+  toggleFavorite: (roomId: string) => void;
+  isFavorite: (roomId: string) => boolean;
   setChat: (next: ChatMessage[] | ((prev: ChatMessage[]) => ChatMessage[])) => void;
   resetChat: () => void;
 };
@@ -111,6 +129,28 @@ const defaultUser: AppUser = {
   phone: "0905 123 456",
 };
 
+/* --------------------------- Lưu vào máy --------------------------- */
+
+const STORAGE_KEY = "smartstay.state.v1";
+
+type Persisted = {
+  user: AppUser | null;
+  bookings: Booking[];
+  chat: ChatMessage[];
+  favorites: string[];
+  myReviews: MyReview[];
+};
+
+const readStorage = (): Partial<Persisted> | null => {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as Partial<Persisted>) : null;
+  } catch {
+    return null;
+  }
+};
+
 /* ------------------------------------------------------------------ */
 /* Provider                                                            */
 /* ------------------------------------------------------------------ */
@@ -124,6 +164,33 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
   const [bookings, setBookings] = useState<Booking[]>(seedBookings);
   const [draft, setDraft] = useState<BookingDraft | null>(null);
   const [chat, setChatState] = useState<ChatMessage[]>([]);
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [myReviews, setMyReviews] = useState<MyReview[]>([]);
+  const [hydrated, setHydrated] = useState(false);
+
+  // Đọc dữ liệu đã lưu sau khi hydrate (tránh lệch giữa server và trình duyệt).
+  useEffect(() => {
+    const saved = readStorage();
+    if (saved) {
+      if (saved.user !== undefined) setUser(saved.user);
+      if (saved.bookings) setBookings(saved.bookings);
+      if (saved.chat) setChatState(saved.chat);
+      if (saved.favorites) setFavorites(saved.favorites);
+      if (saved.myReviews) setMyReviews(saved.myReviews);
+    }
+    setHydrated(true);
+  }, []);
+
+  // Ghi lại mỗi khi dữ liệu thay đổi.
+  useEffect(() => {
+    if (!hydrated || typeof window === "undefined") return;
+    const payload: Persisted = { user, bookings, chat, favorites, myReviews };
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    } catch {
+      /* bỏ qua khi bộ nhớ đầy hoặc bị chặn */
+    }
+  }, [hydrated, user, bookings, chat, favorites, myReviews]);
 
   const signIn = useCallback((u: AppUser) => setUser(u), []);
   const signOut = useCallback(() => {
@@ -175,6 +242,31 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
     setBookings((list) => list.map((b) => (b.id === id ? { ...b, reviewed: true } : b)));
   }, []);
 
+  const addReview = useCallback<AppActions["addReview"]>((input) => {
+    setMyReviews((list) => [
+      {
+        id: `rv-${Date.now()}`,
+        bookingId: input.bookingId,
+        roomId: input.roomId,
+        rating: input.rating,
+        content: input.content,
+        date: format(new Date(), "dd/MM/yyyy"),
+      },
+      ...list.filter((r) => r.bookingId !== input.bookingId),
+    ]);
+  }, []);
+
+  const toggleFavorite = useCallback((roomId: string) => {
+    setFavorites((list) =>
+      list.includes(roomId) ? list.filter((id) => id !== roomId) : [roomId, ...list],
+    );
+  }, []);
+
+  const isFavorite = useCallback(
+    (roomId: string) => favorites.includes(roomId),
+    [favorites],
+  );
+
   const setChat = useCallback<AppActions["setChat"]>((next) => {
     setChatState((prev) => (typeof next === "function" ? next(prev) : next));
   }, []);
@@ -188,6 +280,9 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
       bookings,
       draft,
       chat,
+      favorites,
+      myReviews,
+      hydrated,
       signIn,
       signOut,
       updateUser,
@@ -196,6 +291,9 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
       addBooking,
       cancelBooking,
       markReviewed,
+      addReview,
+      toggleFavorite,
+      isFavorite,
       setChat,
       resetChat,
     }),
@@ -205,6 +303,9 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
       bookings,
       draft,
       chat,
+      favorites,
+      myReviews,
+      hydrated,
       signIn,
       signOut,
       updateUser,
@@ -212,6 +313,9 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
       addBooking,
       cancelBooking,
       markReviewed,
+      addReview,
+      toggleFavorite,
+      isFavorite,
       setChat,
       resetChat,
     ],
