@@ -29,10 +29,11 @@ const criteria = ["Sạch sẽ", "Vị trí", "Dịch vụ", "Đáng giá tiền
 function ReviewScreen() {
   const { id } = Route.useParams();
   const booking = useBookingById(id);
-  const { markReviewed } = useAppStore();
+  const { markReviewed, addReview } = useAppStore();
   const room = getRoom(booking.roomId);
   const [overall, setOverall] = useState(5);
   const [scores, setScores] = useState<Record<string, number>>({});
+  const [comment, setComment] = useState("");
   const [sent, setSent] = useState(false);
 
   if (sent) {
