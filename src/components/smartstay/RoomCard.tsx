@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Star, Users, Maximize } from "lucide-react";
+import { FavoriteButton } from "@/components/smartstay/FavoriteButton";
 import { formatVnd, type Room } from "@/data/mock";
 import { cn } from "@/lib/utils";
 
@@ -35,6 +36,7 @@ export function RoomCard({
               {room.tag}
             </span>
           )}
+          <FavoriteButton roomId={room.id} className="absolute right-2 top-2" />
         </div>
         <div className="p-3">
           <p className="truncate text-sm font-semibold">{room.name}</p>
@@ -71,6 +73,7 @@ export function RoomCard({
           <span className="flex shrink-0 items-center gap-1 text-xs font-medium">
             <Star className="size-3 fill-gold text-gold" />
             {room.rating}
+            <FavoriteButton roomId={room.id} className="-my-1 ml-0.5 size-7 shadow-none" />
           </span>
         </div>
         <p className="text-xs text-muted-foreground">{room.type}</p>
