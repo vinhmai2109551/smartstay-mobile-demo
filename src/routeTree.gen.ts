@@ -13,12 +13,14 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as DangKyRouteImport } from './routes/dang-ky'
 import { Route as DangNhapRouteImport } from './routes/dang-nhap'
+import { Route as DanhGiaRouteImport } from './routes/danh-gia'
 import { Route as DonCuaToiRouteImport } from './routes/don-cua-toi'
 import { Route as HoSoRouteImport } from './routes/ho-so'
 import { Route as QuenMatKhauRouteImport } from './routes/quen-mat-khau'
 import { Route as ThongBaoRouteImport } from './routes/thong-bao'
 import { Route as TimPhongRouteImport } from './routes/tim-phong'
 import { Route as TrangChuRouteImport } from './routes/trang-chu'
+import { Route as YeuThichRouteImport } from './routes/yeu-thich'
 import { Route as DanhGiaIdRouteImport } from './routes/danh-gia.$id'
 import { Route as DatPhongIdRouteImport } from './routes/dat-phong.$id'
 import { Route as DonIdRouteImport } from './routes/don.$id'
@@ -45,6 +47,11 @@ const DangKyRoute = DangKyRouteImport.update({
 const DangNhapRoute = DangNhapRouteImport.update({
   id: '/dang-nhap',
   path: '/dang-nhap',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DanhGiaRoute = DanhGiaRouteImport.update({
+  id: '/danh-gia',
+  path: '/danh-gia',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DonCuaToiRoute = DonCuaToiRouteImport.update({
@@ -77,10 +84,15 @@ const TrangChuRoute = TrangChuRouteImport.update({
   path: '/trang-chu',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DanhGiaIdRoute = DanhGiaIdRouteImport.update({
-  id: '/danh-gia/$id',
-  path: '/danh-gia/$id',
+const YeuThichRoute = YeuThichRouteImport.update({
+  id: '/yeu-thich',
+  path: '/yeu-thich',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DanhGiaIdRoute = DanhGiaIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => DanhGiaRoute,
 } as any)
 const DatPhongIdRoute = DatPhongIdRouteImport.update({
   id: '/dat-phong/$id',
@@ -118,12 +130,14 @@ export interface FileRoutesByFullPath {
   '/chat': typeof ChatRoute
   '/dang-ky': typeof DangKyRoute
   '/dang-nhap': typeof DangNhapRoute
+  '/danh-gia': typeof DanhGiaRouteWithChildren
   '/don-cua-toi': typeof DonCuaToiRoute
   '/ho-so': typeof HoSoRoute
   '/quen-mat-khau': typeof QuenMatKhauRoute
   '/thong-bao': typeof ThongBaoRoute
   '/tim-phong': typeof TimPhongRoute
   '/trang-chu': typeof TrangChuRoute
+  '/yeu-thich': typeof YeuThichRoute
   '/danh-gia/$id': typeof DanhGiaIdRoute
   '/dat-phong/$id': typeof DatPhongIdRoute
   '/don/$id': typeof DonIdRoute
@@ -137,12 +151,14 @@ export interface FileRoutesByTo {
   '/chat': typeof ChatRoute
   '/dang-ky': typeof DangKyRoute
   '/dang-nhap': typeof DangNhapRoute
+  '/danh-gia': typeof DanhGiaRouteWithChildren
   '/don-cua-toi': typeof DonCuaToiRoute
   '/ho-so': typeof HoSoRoute
   '/quen-mat-khau': typeof QuenMatKhauRoute
   '/thong-bao': typeof ThongBaoRoute
   '/tim-phong': typeof TimPhongRoute
   '/trang-chu': typeof TrangChuRoute
+  '/yeu-thich': typeof YeuThichRoute
   '/danh-gia/$id': typeof DanhGiaIdRoute
   '/dat-phong/$id': typeof DatPhongIdRoute
   '/don/$id': typeof DonIdRoute
@@ -157,12 +173,14 @@ export interface FileRoutesById {
   '/chat': typeof ChatRoute
   '/dang-ky': typeof DangKyRoute
   '/dang-nhap': typeof DangNhapRoute
+  '/danh-gia': typeof DanhGiaRouteWithChildren
   '/don-cua-toi': typeof DonCuaToiRoute
   '/ho-so': typeof HoSoRoute
   '/quen-mat-khau': typeof QuenMatKhauRoute
   '/thong-bao': typeof ThongBaoRoute
   '/tim-phong': typeof TimPhongRoute
   '/trang-chu': typeof TrangChuRoute
+  '/yeu-thich': typeof YeuThichRoute
   '/danh-gia/$id': typeof DanhGiaIdRoute
   '/dat-phong/$id': typeof DatPhongIdRoute
   '/don/$id': typeof DonIdRoute
@@ -178,12 +196,14 @@ export interface FileRouteTypes {
     | '/chat'
     | '/dang-ky'
     | '/dang-nhap'
+    | '/danh-gia'
     | '/don-cua-toi'
     | '/ho-so'
     | '/quen-mat-khau'
     | '/thong-bao'
     | '/tim-phong'
     | '/trang-chu'
+    | '/yeu-thich'
     | '/danh-gia/$id'
     | '/dat-phong/$id'
     | '/don/$id'
@@ -197,12 +217,14 @@ export interface FileRouteTypes {
     | '/chat'
     | '/dang-ky'
     | '/dang-nhap'
+    | '/danh-gia'
     | '/don-cua-toi'
     | '/ho-so'
     | '/quen-mat-khau'
     | '/thong-bao'
     | '/tim-phong'
     | '/trang-chu'
+    | '/yeu-thich'
     | '/danh-gia/$id'
     | '/dat-phong/$id'
     | '/don/$id'
@@ -216,12 +238,14 @@ export interface FileRouteTypes {
     | '/chat'
     | '/dang-ky'
     | '/dang-nhap'
+    | '/danh-gia'
     | '/don-cua-toi'
     | '/ho-so'
     | '/quen-mat-khau'
     | '/thong-bao'
     | '/tim-phong'
     | '/trang-chu'
+    | '/yeu-thich'
     | '/danh-gia/$id'
     | '/dat-phong/$id'
     | '/don/$id'
@@ -236,13 +260,14 @@ export interface RootRouteChildren {
   ChatRoute: typeof ChatRoute
   DangKyRoute: typeof DangKyRoute
   DangNhapRoute: typeof DangNhapRoute
+  DanhGiaRoute: typeof DanhGiaRouteWithChildren
   DonCuaToiRoute: typeof DonCuaToiRoute
   HoSoRoute: typeof HoSoRoute
   QuenMatKhauRoute: typeof QuenMatKhauRoute
   ThongBaoRoute: typeof ThongBaoRoute
   TimPhongRoute: typeof TimPhongRoute
   TrangChuRoute: typeof TrangChuRoute
-  DanhGiaIdRoute: typeof DanhGiaIdRoute
+  YeuThichRoute: typeof YeuThichRoute
   DatPhongIdRoute: typeof DatPhongIdRoute
   DonIdRoute: typeof DonIdRoute
   PhongIdRoute: typeof PhongIdRoute
@@ -278,6 +303,13 @@ declare module '@tanstack/react-router' {
       path: '/dang-nhap'
       fullPath: '/dang-nhap'
       preLoaderRoute: typeof DangNhapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/danh-gia': {
+      id: '/danh-gia'
+      path: '/danh-gia'
+      fullPath: '/danh-gia'
+      preLoaderRoute: typeof DanhGiaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/don-cua-toi': {
@@ -322,12 +354,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrangChuRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/yeu-thich': {
+      id: '/yeu-thich'
+      path: '/yeu-thich'
+      fullPath: '/yeu-thich'
+      preLoaderRoute: typeof YeuThichRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/danh-gia/$id': {
       id: '/danh-gia/$id'
-      path: '/danh-gia/$id'
+      path: '/$id'
       fullPath: '/danh-gia/$id'
       preLoaderRoute: typeof DanhGiaIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof DanhGiaRoute
     }
     '/dat-phong/$id': {
       id: '/dat-phong/$id'
@@ -374,6 +413,17 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface DanhGiaRouteChildren {
+  DanhGiaIdRoute: typeof DanhGiaIdRoute
+}
+
+const DanhGiaRouteChildren: DanhGiaRouteChildren = {
+  DanhGiaIdRoute: DanhGiaIdRoute,
+}
+
+const DanhGiaRouteWithChildren =
+  DanhGiaRoute._addFileChildren(DanhGiaRouteChildren)
+
 interface ThanhToanIdRouteChildren {
   ThanhToanIdKetQuaRoute: typeof ThanhToanIdKetQuaRoute
 }
@@ -391,13 +441,14 @@ const rootRouteChildren: RootRouteChildren = {
   ChatRoute: ChatRoute,
   DangKyRoute: DangKyRoute,
   DangNhapRoute: DangNhapRoute,
+  DanhGiaRoute: DanhGiaRouteWithChildren,
   DonCuaToiRoute: DonCuaToiRoute,
   HoSoRoute: HoSoRoute,
   QuenMatKhauRoute: QuenMatKhauRoute,
   ThongBaoRoute: ThongBaoRoute,
   TimPhongRoute: TimPhongRoute,
   TrangChuRoute: TrangChuRoute,
-  DanhGiaIdRoute: DanhGiaIdRoute,
+  YeuThichRoute: YeuThichRoute,
   DatPhongIdRoute: DatPhongIdRoute,
   DonIdRoute: DonIdRoute,
   PhongIdRoute: PhongIdRoute,
