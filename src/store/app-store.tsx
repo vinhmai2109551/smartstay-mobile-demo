@@ -45,6 +45,8 @@ export type ChatMessage = {
   from: "ai" | "user";
   text: string;
   roomIds?: string[];
+  /** Dịch vụ thêm AI gợi ý. */
+  serviceIds?: string[];
   /** Widget đặt phòng ngay trong khung chat. */
   bookingRoomId?: string;
   /** Kết quả đặt phòng trong chat. */
